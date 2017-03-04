@@ -101,9 +101,12 @@ void ts3plugin_setFunctionPointers(const struct TS3Functions funcs) {
 
 void __cdecl GkeySDKCallback(GkeyCode gkeyCode, wchar_t* gkeyOrButtonString, void* context)
 {
-    // Notify Teamspeak of the G-Key event
+    // Construct our own consistent identifier
     char keyId[GKEY_ID_BUFSIZE];
     snprintf(keyId, "%s-g%d-m%d", gkeyCode.mouse ? "mouse" : "keybd", gkeyCode.keyIdx, gkeyCode.mState);
+
+    // Notify Teamspeak of the G-Key event
+    // For the up_down parameter 1 = up and 0 = down, so invert it
     ts3Functions.notifyKeyEvent(pluginID, keyId, !gkeyCode.keyDown);
 }
 
