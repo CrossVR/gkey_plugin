@@ -85,14 +85,13 @@ int ts3plugin_apiVersion() {
 
 /* Plugin author */
 const char* ts3plugin_author() {
-    /* If you want to use wchar_t, see ts3plugin_name() on how to use */
-    return "Armada";
+    return "Jules Blok";
 }
 
 /* Plugin description */
 const char* ts3plugin_description() {
     /* If you want to use wchar_t, see ts3plugin_name() on how to use */
-    return "This plugin provides support for Logitech devices with G-Key support for hotkeys.";
+    return "This plugin provides support for Logitech devices with G-Keys for hotkeys.";
 }
 
 /* Set TeamSpeak 3 callback functions */
