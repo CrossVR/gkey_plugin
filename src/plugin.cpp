@@ -28,9 +28,11 @@ static struct TS3Functions ts3Functions;
 
 #ifdef _WIN32
 #define _strcpy(dest, destSize, src) strcpy_s(dest, destSize, src)
+#define _strtok(cntx, delim) strtok_s(cntx, delim, &cntx)
 #define snprintf sprintf_s
 #else
 #define _strcpy(dest, destSize, src) { strncpy(dest, src, destSize-1); (dest)[destSize-1] = '\0'; }
+#define _strtok(cntx, delim) strtok(cntx, delim)
 #endif
 
 #define PLUGIN_API_VERSION 22
@@ -41,6 +43,10 @@ static struct TS3Functions ts3Functions;
 #define SERVERINFO_BUFSIZE 256
 #define CHANNELINFO_BUFSIZE 512
 #define RETURNCODE_BUFSIZE 128
+
+#define GKEY_ID_BUFSIZE 20
+#define GKEY_MOUSE_ID "mouse"
+#define GKEY_KEYBOARDD_ID "keybd"
 
 static char* pluginID = NULL;
 
@@ -64,19 +70,7 @@ static int wcharToUtf8(const wchar_t* str, char** result) {
 
 /* Unique name identifying this plugin */
 const char* ts3plugin_name() {
-#ifdef _WIN32
-    /* TeamSpeak expects UTF-8 encoded characters. Following demonstrates a possibility how to convert UTF-16 wchar_t into UTF-8. */
-    static char* result = NULL;  /* Static variable so it's allocated only once */
-    if (!result) {
-        const wchar_t* name = L"G-Key Plugin";
-        if (wcharToUtf8(name, &result) == -1) {  /* Convert name into UTF-8 encoded result */
-            result = "G-Key Plugin";  /* Conversion failed, fallback here */
-        }
-    }
-    return result;
-#else
     return "G-Key Plugin";
-#endif
 }
 
 /* Plugin version */
@@ -109,12 +103,9 @@ void ts3plugin_setFunctionPointers(const struct TS3Functions funcs) {
 void __cdecl GkeySDKCallback(GkeyCode gkeyCode, wchar_t* gkeyOrButtonString, void* context)
 {
     // Notify Teamspeak of the G-Key event
-    char* id = NULL;
-    if (wcharToUtf8(gkeyOrButtonString, &id) == 0) {
-        // For the up_down parameter 1 = up and 0 = down, so invert it
-        ts3Functions.notifyKeyEvent(pluginID, id, !gkeyCode.keyDown);
-    }
-    free(id);
+    char keyId[GKEY_ID_BUFSIZE];
+    snprintf(keyId, "%s-g%d-m%d", gkeyCode.mouse ? "mouse" : "keybd", gkeyCode.keyIdx, gkeyCode.mState);
+    ts3Functions.notifyKeyEvent(pluginID, keyId, !gkeyCode.keyDown);
 }
 
 /*
@@ -218,16 +209,55 @@ int ts3plugin_requestAutoload() {
 // This function receives your key Identifier you send to notifyKeyEvent and should return
 // the friendly device name of the device this hotkey originates from. Used for display in UI.
 const char* ts3plugin_keyDeviceName(const char* keyIdentifier) {
-    if (strstr(keyIdentifier, "Mouse"))
+    if (strstr(keyIdentifier, GKEY_MOUSE_ID))
         return "Logitech Mouse";
     else
         return "Logitech Keyboard";
 }
 
+GkeyCode GkeyIdentifierToCode(const char* keyIdentifier) {
+    // Allocate a string we can modify
+    size_t len = strlen(keyIdentifier) + 1;
+    char* str = (char*)malloc(len);
+    _strcpy(str, len, keyIdentifier);
+
+    // Tokenize the string
+    char* cntx = str;
+    char* device = _strtok(cntx, "-");
+    char* gkey = _strtok(cntx, "-");
+    char* mkey = _strtok(cntx, "-");
+
+    // Construct the gkey code
+    GkeyCode code = { 0 };
+    if (device)
+        code.mouse = (strcmp(device, GKEY_MOUSE_ID) == 0) ? 1 : 0;
+    if (gkey)
+        code.keyIdx = atoi(gkey + 1);
+    if (mkey)
+        code.mState = atoi(mkey + 1);
+
+    // Cleanup and return
+    free(str);
+    return code;
+}
+
 // This function translates the given key identifier to a friendly key name for display in the UI
 const char* ts3plugin_displayKeyText(const char* keyIdentifier) {
-    // The Logitech G-Key SDK already uses a friendly name
-    return keyIdentifier;
+    GkeyCode code = GkeyIdentifierToCode(keyIdentifier);
+
+    wchar_t* text = NULL;
+    if (code.mouse)
+        text = LogiGkeyGetMouseButtonString(code.keyIdx);
+    else
+        text = LogiGkeyGetKeyboardGkeyString(code.keyIdx, code.mState);
+
+    /* TeamSpeak expects UTF-8 encoded characters. Following demonstrates a possibility how to convert UTF-16 wchar_t into UTF-8. */
+    static char* result = NULL;  /* Static variable so it's allocated only once */
+    if (result)
+        free(result);
+    if (wcharToUtf8(text, &result) == -1) /* Convert name into UTF-8 encoded result */
+        return keyIdentifier;  /* Conversion failed, fallback here */
+    return result;
 }
 
 // This is used internally as a prefix for hotkeys so we can store them without collisions.
