@@ -1,9 +1,3 @@
-/*
-* TeamSpeak 3 demo plugin
-*
-* Copyright (c) 2008-2017 TeamSpeak Systems GmbH
-*/
-
 #ifdef _WIN32
 #pragma warning (disable : 4100)  /* Disable Unreferenced parameter warning */
 #include <Windows.h>
@@ -36,13 +30,6 @@ static struct TS3Functions ts3Functions;
 #endif
 
 #define PLUGIN_API_VERSION 22
-
-#define PATH_BUFSIZE 512
-#define COMMAND_BUFSIZE 128
-#define INFODATA_BUFSIZE 128
-#define SERVERINFO_BUFSIZE 256
-#define CHANNELINFO_BUFSIZE 512
-#define RETURNCODE_BUFSIZE 128
 
 #define GKEY_ID_BUFSIZE 64
 #define GKEY_MOUSE_ID "mouse"
