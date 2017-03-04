@@ -44,7 +44,7 @@ static struct TS3Functions ts3Functions;
 #define CHANNELINFO_BUFSIZE 512
 #define RETURNCODE_BUFSIZE 128
 
-#define GKEY_ID_BUFSIZE 20
+#define GKEY_ID_BUFSIZE 64
 #define GKEY_MOUSE_ID "mouse"
 #define GKEY_KEYBOARDD_ID "keybd"
 
@@ -103,7 +103,7 @@ void __cdecl GkeySDKCallback(GkeyCode gkeyCode, wchar_t* gkeyOrButtonString, voi
 {
     // Construct our own consistent identifier
     char keyId[GKEY_ID_BUFSIZE];
-    snprintf(keyId, "%s-g%d-m%d", gkeyCode.mouse ? "mouse" : "keybd", gkeyCode.keyIdx, gkeyCode.mState);
+    snprintf(keyId, GKEY_ID_BUFSIZE, "%s-g%d-m%d", gkeyCode.mouse ? "mouse" : "keybd", gkeyCode.keyIdx, gkeyCode.mState);
 
     // Notify Teamspeak of the G-Key event
     // For the up_down parameter 1 = up and 0 = down, so invert it
