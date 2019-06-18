@@ -29,7 +29,7 @@ static struct TS3Functions ts3Functions;
 #define _strtok(cntx, delim) strtok(cntx, delim)
 #endif
 
-#define PLUGIN_API_VERSION 22
+#define PLUGIN_API_VERSION 23
 
 #define GKEY_ID_BUFSIZE 64
 #define GKEY_MOUSE_ID "mouse"
@@ -62,7 +62,7 @@ const char* ts3plugin_name() {
 
 /* Plugin version */
 const char* ts3plugin_version() {
-    return "1.0";
+    return "1.1";
 }
 
 /* Plugin API version. Must be the same as the clients API major version, else the plugin fails to load. */
