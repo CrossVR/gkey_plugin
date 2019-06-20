@@ -1,3 +1,6 @@
 [submodule "ts3client-pluginsdk"]
 	path = ts3client-pluginsdk
 	url = https://github.com/TeamSpeak-Systems/ts3client-pluginsdk.git
+[submodule "LGS_GKEY"]
+	path = LGS_GKEY
+	url = https://github.com/logihackdays/LGS_GKEY
