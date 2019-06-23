@@ -33,7 +33,7 @@ static struct TS3Functions ts3Functions;
 
 #define GKEY_ID_BUFSIZE 64
 #define GKEY_MOUSE_ID "mouse"
-#define GKEY_KEYBOARDD_ID "keybd"
+#define GKEY_KEYBOARD_ID "keybd"
 
 static char* pluginID = NULL;
 
