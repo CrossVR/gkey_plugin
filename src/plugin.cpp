@@ -29,7 +29,7 @@ static struct TS3Functions ts3Functions;
 #define _strtok(cntx, delim) strtok(cntx, delim)
 #endif
 
-#define PLUGIN_API_VERSION 23
+#define PLUGIN_API_VERSION 26
 
 #define GKEY_ID_BUFSIZE 64
 #define GKEY_MOUSE_ID "mouse"
