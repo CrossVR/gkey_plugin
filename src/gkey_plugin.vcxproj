@@ -131,6 +131,7 @@
       <TargetMachine>MachineX86</TargetMachine>
       <AdditionalLibraryDirectories>..\LGS_GKEY\Lib\x86</AdditionalLibraryDirectories>
       <GenerateDebugInformation>false</GenerateDebugInformation>
+      <AdditionalOptions>/NOIMPLIB /NOEXP %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -150,6 +151,7 @@
       <AdditionalLibraryDirectories>..\LGS_GKEY\Lib\x64</AdditionalLibraryDirectories>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
       <GenerateDebugInformation>false</GenerateDebugInformation>
+      <AdditionalOptions>/NOIMPLIB /NOEXP %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
